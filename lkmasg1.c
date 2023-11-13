@@ -21,6 +21,15 @@ MODULE_VERSION("0.1");						 ///< A version number to inform users
  * Important variables that store data and keep track of relevant information.
  */
 static int major_number;
+static char message[256] = {};
+
+static char CQUEUE[1024] = {};
+
+static int sPoint = 0;
+static int ePoint = 1;
+
+static short size_of_message;
+static int numberOpens = 0;
 
 static struct class *lkmasg1Class = NULL;	///< The device-driver class struct pointer
 static struct device *lkmasg1Device = NULL; ///< The device-driver device struct pointer
@@ -105,6 +114,7 @@ void cleanup_module(void)
  */
 static int open(struct inode *inodep, struct file *filep)
 {
+	numberOpens++;
 	printk(KERN_INFO "lkmasg1: device opened.\n");
 	return 0;
 }
@@ -121,10 +131,28 @@ static int close(struct inode *inodep, struct file *filep)
 /*
  * Reads from device, displays in userspace, and deletes the read data
  */
-static ssize_t read(struct file *filep, char *buffer, size_t len, loff_t *offset)
-{
+static ssize_t read(struct file *filep, char *buffer, size_t len, loff_t *offset) {
 	printk(KERN_INFO "read stub");
-	return 0;
+
+	if(ePoint == 1) {
+		printk(KERN_INFO "ERROR: Nothing in the Buffer");
+		return 0;
+	} else{
+		printk(KERN_INFO "test");
+	}
+
+
+	int error_count = 0;
+
+	error_count = copy_to_user(buffer, message, size_of_message);
+
+	if (error_count == 0) {
+		printk(KERN_INFO "EBBChar: Sent %d characters to the user\n", size_of_message);
+		return (size_of_message = 0);
+	} else {
+		printk(KERN_INFO "EBBChar: Failed to send %d characters to the user\n", error_count);
+		return -EFAULT;
+	}
 }
 
 /*
@@ -133,5 +161,12 @@ static ssize_t read(struct file *filep, char *buffer, size_t len, loff_t *offset
 static ssize_t write(struct file *filep, const char *buffer, size_t len, loff_t *offset)
 {
 	printk(KERN_INFO "write stub");
+
+	sprintf(message, "%s(%zu letters)", buffer, len);
+
+	size_of_message = strlen(message);
+
+	printk(KERN_INFO "EBBChar: Received %zu characters from the user\n", len);
+
 	return len;
 }
