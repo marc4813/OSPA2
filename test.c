@@ -16,13 +16,14 @@
 #include <fcntl.h>
 #include <string.h>
 #include <unistd.h>
-#include <stdbool.h>
 
-#define BUFFER_LENGTH 1024           ///< The buffer length (crude but fine)
+#define BUFFER_LENGTH 256           ///< The buffer length (crude but fine)
 static char receive[BUFFER_LENGTH]; ///< The receive buffer from the LKM
 
-int main(int argc, char *argv[]) {
-    if (argc != 2) {
+int main(int argc, char *argv[])
+{
+    if (argc != 2)
+    {
         printf("Usage: test <path to device>\n");
         exit(0);
     }
@@ -30,45 +31,20 @@ int main(int argc, char *argv[]) {
 
     int ret, fd;
     char stringToSend[BUFFER_LENGTH];
-
-    do {
-       printf("Press ENTER to read back from the device...\n");
-        getchar();
-
-        printf("Reading from the device...\n");
-        ret = read(fd, receive, BUFFER_LENGTH); // Read the response from the LKM
-    
-        printf("%d", ret);
-
-        if (ret == 0) {
-          perror("Nothing is in the Buffer.");
-            return -1;
-         }
-
-    } while(false);
-
-    return 0;
-
-
-
-
-
     strncpy(stringToSend, "", sizeof(stringToSend));
     printf("Starting device test code example...\n");
     fd = open(devicepath, O_RDWR); // Open the device with read/write access
-    
-    if (fd < 0) {
+    if (fd < 0)
+    {
         perror("Failed to open the device...");
         return errno;
     }
-    
     printf("Type in a short string to send to the kernel module:\n");
     scanf("%[^\n]%*c", stringToSend); // Read in a string (with spaces)
     printf("Writing message to the device [%s].\n", stringToSend);
-    
     ret = write(fd, stringToSend, strlen(stringToSend)); // Send the string to the LKM
-    
-    if (ret < 0) {
+    if (ret < 0)
+    {
         perror("Failed to write the message to the device.");
         return errno;
     }
@@ -78,12 +54,11 @@ int main(int argc, char *argv[]) {
 
     printf("Reading from the device...\n");
     ret = read(fd, receive, BUFFER_LENGTH); // Read the response from the LKM
-    
-    if (ret < 0) {
+    if (ret < 0)
+    {
         perror("Failed to read the message from the device.");
         return errno;
     }
-
     printf("The received message is: [%s]\n", receive);
     printf("End of the program\n");
     return 0;

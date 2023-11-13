@@ -1,1 +1,2 @@
-/home/username/Desktop/cop4600/lkmasg1.o
+/home/marc/OSPA2/OSPA2/lkmasg1.o
+

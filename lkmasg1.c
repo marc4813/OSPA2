@@ -148,7 +148,7 @@ static ssize_t read(struct file *filep, char *buffer, size_t len, loff_t *offset
 
 	if (error_count == 0) {
 		printk(KERN_INFO "EBBChar: Sent %d characters to the user\n", size_of_message);
-		return (size_of_message = 0);
+		return (size_of_message == 0);
 	} else {
 		printk(KERN_INFO "EBBChar: Failed to send %d characters to the user\n", error_count);
 		return -EFAULT;
@@ -165,6 +165,10 @@ static ssize_t write(struct file *filep, const char *buffer, size_t len, loff_t 
 	sprintf(message, "%s(%zu letters)", buffer, len);
 
 	size_of_message = strlen(message);
+
+	// Fill the buffer 
+	
+	ePoint = size_of_message - 1;
 
 	printk(KERN_INFO "EBBChar: Received %zu characters from the user\n", len);
 

@@ -2,7 +2,6 @@
 #define INCLUDE_VERMAGIC
 #include <linux/build-salt.h>
 #include <linux/elfnote-lto.h>
-#include <linux/export-internal.h>
 #include <linux/vermagic.h>
 #include <linux/compiler.h>
 
@@ -26,26 +25,28 @@ __section(".gnu.linkonce.this_module") = {
 MODULE_INFO(retpoline, "Y");
 #endif
 
-
 static const struct modversion_info ____versions[]
 __used __section("__versions") = {
-	{ 0xa916b694, "strnlen" },
-	{ 0xcbd4898c, "fortify_panic" },
-	{ 0x25f7aec2, "__register_chrdev" },
-	{ 0xeea3c1d8, "__class_create" },
-	{ 0x6c333d48, "device_create" },
+	{ 0x4cf819e6, "module_layout" },
+	{ 0x5aa7e48, "class_unregister" },
+	{ 0x15659e9d, "device_destroy" },
+	{ 0xb3f0559, "class_destroy" },
+	{ 0x70eb7a97, "device_create" },
 	{ 0x6bc3fbc0, "__unregister_chrdev" },
-	{ 0x6a2dd7c, "class_destroy" },
-	{ 0x3e2bc4cf, "device_destroy" },
-	{ 0x64d6abe3, "class_unregister" },
-	{ 0xbdfb6dbb, "__fentry__" },
-	{ 0x122c3a7e, "_printk" },
-	{ 0x5b8239ca, "__x86_return_thunk" },
+	{ 0x52ea150d, "__class_create" },
+	{ 0x23295fe0, "__register_chrdev" },
+	{ 0x6b10bee1, "_copy_to_user" },
+	{ 0x88db9f48, "__check_object_size" },
+	{ 0x56470118, "__warn_printk" },
+	{ 0xcbd4898c, "fortify_panic" },
+	{ 0xa916b694, "strnlen" },
 	{ 0x3c3ff9fd, "sprintf" },
-	{ 0x453e7dc, "module_layout" },
+	{ 0x5b8239ca, "__x86_return_thunk" },
+	{ 0x92997ed8, "_printk" },
+	{ 0xbdfb6dbb, "__fentry__" },
 };
 
 MODULE_INFO(depends, "");
 
 
-MODULE_INFO(srcversion, "78966FF5ED1985AA509D0BB");
+MODULE_INFO(srcversion, "F4F8F13B12D8DFAEFBB5952");
