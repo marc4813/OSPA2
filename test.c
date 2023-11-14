@@ -33,60 +33,55 @@ int main(int argc, char *argv[]) {
     strncpy(stringToSend, "", sizeof(stringToSend));
     fd = open(devicepath, O_RDWR);
 
+    printf("Welcome to our LKM \n");
+    printf("Options: \n\n o : open \n c : close \n r : read \n w : write \n");
+    int flag = 1;
     do {
-       printf("Press ENTER to read back from the device...\n");
-       getchar();
-
-        printf("Reading from the device...\n");
-        ret = read(fd, receive, BUFFER_LENGTH); // Read the response from the LKM
+        char input;
+        input = getchar();
+        switch(input){
+            case 'o':
+                strncpy(stringToSend, "", sizeof(stringToSend));
+                printf("Starting device...\n");
+                fd = open(devicepath, O_RDWR); // Open the device with read/write access
     
-        printf("%d", ret);
+                if (fd < 0) {
+                    perror("Failed to open the device...");
+                    return errno;
+                }
+                break;
 
-        if (ret == 0) {
-          perror("Nothing is in the Buffer.");
-            return -1;
-         }
+            case 'c':
+                printf("End of the program\n");
+                flag = 0;
+                break;
 
-    } while(false);
-
-    return 0;
-
-
-
-
-
-    strncpy(stringToSend, "", sizeof(stringToSend));
-    printf("Starting device test code example...\n");
-    fd = open(devicepath, O_RDWR); // Open the device with read/write access
+            case 'r':
+                printf("Reading from the device...\n");
+                ret = read(fd, receive, BUFFER_LENGTH); // Read the response from the LKM
     
-    if (fd < 0) {
-        perror("Failed to open the device...");
-        return errno;
-    }
-    
-    printf("Type in a short string to send to the kernel module:\n");
-    scanf("%[^\n]%*c", stringToSend); // Read in a string (with spaces)
-    printf("Writing message to the device [%s].\n", stringToSend);
-    
-    ret = write(fd, stringToSend, strlen(stringToSend)); // Send the string to the LKM
-    
-    if (ret < 0) {
-        perror("Failed to write the message to the device.");
-        return errno;
-    }
+                if (ret < 0) {
+                    perror("Failed to read the message from the device.");
+                    return errno;
+                }
 
-    printf("Press ENTER to read back from the device...\n");
-    getchar();
+                printf("The received message is: [%s]\n", receive);
+                break;
 
-    printf("Reading from the device...\n");
-    ret = read(fd, receive, BUFFER_LENGTH); // Read the response from the LKM
+            case 'w':
+                printf("Type in a short string to send to the kernel module:\n");
+                scanf("%[^\n]%*c", stringToSend); // Read in a string (with spaces)
+                printf("Writing message to the device [%s].\n", stringToSend);
     
-    if (ret < 0) {
-        perror("Failed to read the message from the device.");
-        return errno;
-    }
+                ret = write(fd, stringToSend, strlen(stringToSend)); // Send the string to the LKM
+    
+                if (ret < 0) {
+                    perror("Failed to write the message to the device.");
+                    return errno;
+                }
+                break;
+        }
+    } while(flag == 1);
 
-    printf("The received message is: [%s]\n", receive);
-    printf("End of the program\n");
     return 0;
 }
