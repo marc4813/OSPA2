@@ -40,7 +40,7 @@ __used __section("__versions") = {
 	{ 0x56470118, "__warn_printk" },
 	{ 0xcbd4898c, "fortify_panic" },
 	{ 0xa916b694, "strnlen" },
-	{ 0x3c3ff9fd, "sprintf" },
+	{ 0xe914e41e, "strcpy" },
 	{ 0x5b8239ca, "__x86_return_thunk" },
 	{ 0x92997ed8, "_printk" },
 	{ 0xbdfb6dbb, "__fentry__" },
@@ -49,4 +49,4 @@ __used __section("__versions") = {
 MODULE_INFO(depends, "");
 
 
-MODULE_INFO(srcversion, "F4F8F13B12D8DFAEFBB5952");
+MODULE_INFO(srcversion, "1C105357C8D48D3AD006385");

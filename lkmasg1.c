@@ -133,8 +133,8 @@ static int close(struct inode *inodep, struct file *filep)
  */
 static ssize_t read(struct file *filep, char *buffer, size_t len, loff_t *offset) {
 	printk(KERN_INFO "read stub");
-
-	if(ePoint == 1) {
+	printk(KERN_INFO "PRINTED SOMETHING");
+	if(ePoint == sPoint) {
 		printk(KERN_INFO "ERROR: Nothing in the Buffer");
 		return 0;
 	} else{
@@ -162,13 +162,11 @@ static ssize_t write(struct file *filep, const char *buffer, size_t len, loff_t 
 {
 	printk(KERN_INFO "write stub");
 
-	sprintf(message, "%s(%zu letters)", buffer, len);
+	sprintf(message, "%s", buffer);
 
 	size_of_message = strlen(message);
 
-	// Fill the buffer 
-	
-	ePoint = size_of_message - 1;
+	ePoint = size_of_message;
 
 	printk(KERN_INFO "EBBChar: Received %zu characters from the user\n", len);
 
