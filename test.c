@@ -28,7 +28,7 @@ int main(int argc, char *argv[]) {
     }
     char *devicepath = argv[1];
 
-    int ret, fd;
+    int ret, fd, len = 0;
     char stringToSend[BUFFER_LENGTH];
     
     strncpy(stringToSend, "", sizeof(stringToSend));
@@ -49,15 +49,18 @@ int main(int argc, char *argv[]) {
 
         switch(input){
             case 'r':
+                printf("Press ENTER to read back from the device\n");
+                getchar();
+
                 printf("Reading from the device...\n");
-                ret = read(fd, receive, BUFFER_LENGTH); // Read the response from the LKM
+                ret = read(fd, receive, len); // Read the response from the LKM
     
                 if (ret < 0) {
-                    perror("Failed to read the message from the device.");
-                    return errno;
+                    printf("The Buffer is empty\n");
+                } else {
+                    printf("[%s]\n", receive);
                 }
 
-                printf("The received message is: [%s]\n", receive);
                 break;
 
             case 'w':
@@ -68,7 +71,8 @@ int main(int argc, char *argv[]) {
                 printf("Writing message to the device [%s].\n", stringToSend);
     
                 ret = write(fd, stringToSend, strlen(stringToSend)); // Send the string to the LKM
-    
+                len = strlen(stringToSend);
+
                 if (ret < 0) {
                     perror("Failed to write the message to the device.");
                     return errno;

@@ -133,7 +133,7 @@ static int close(struct inode *inodep, struct file *filep)
 static ssize_t read(struct file *filep, char *buffer, size_t len, loff_t *offset) {
 	printk(KERN_INFO "read stub");
 	
-	if(ePoint == sPoint) {
+	if(sPoint == ePoint) {
 		printk(KERN_INFO "ERROR: Nothing in the Buffer");
 		return -1;
 	}
