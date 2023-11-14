@@ -21,12 +21,11 @@ MODULE_VERSION("0.1");						 ///< A version number to inform users
  * Important variables that store data and keep track of relevant information.
  */
 static int major_number;
-static char message[256] = {};
 
 static char CQUEUE[1024] = {};
 
 static int sPoint = 0;
-static int ePoint = 1;
+static int ePoint = 0;
 
 static short size_of_message;
 static int numberOpens = 0;
@@ -133,40 +132,44 @@ static int close(struct inode *inodep, struct file *filep)
  */
 static ssize_t read(struct file *filep, char *buffer, size_t len, loff_t *offset) {
 	printk(KERN_INFO "read stub");
-	printk(KERN_INFO "PRINTED SOMETHING");
+	
 	if(ePoint == sPoint) {
 		printk(KERN_INFO "ERROR: Nothing in the Buffer");
-		return 0;
-	} else{
-		printk(KERN_INFO "test");
+		return -1;
 	}
 
-
-	int error_count = 0;
-
-	error_count = copy_to_user(buffer, message, size_of_message);
-
-	if (error_count == 0) {
-		printk(KERN_INFO "EBBChar: Sent %d characters to the user\n", size_of_message);
-		return (size_of_message == 0);
+	if(len > (ePoint - sPoint)) {
+		printk(KERN_INFO "ERROR: Buffer is too short");
+		return -1;
 	} else {
-		printk(KERN_INFO "EBBChar: Failed to send %d characters to the user\n", error_count);
-		return -EFAULT;
+		int error_count = 0;
+		error_count = copy_to_user(buffer, CQUEUE, len);
+
+		sPoint = (sPoint + len) % 1024;
+
+		printk(KERN_INFO "%d", sPoint);
+
+		if (error_count == 0) {
+			//printk(KERN_INFO "EBBChar: Sent %d characters to the user\n", len);
+			return 1;
+		} else {
+			//printk(KERN_INFO "EBBChar: Failed to send %d characters to the user\n", error_count);
+			return -EFAULT;
+		}
 	}
 }
 
 /*
  * Writes to the device
  */
-static ssize_t write(struct file *filep, const char *buffer, size_t len, loff_t *offset)
-{
+static ssize_t write(struct file *filep, const char *buffer, size_t len, loff_t *offset) {
 	printk(KERN_INFO "write stub");
 
-	sprintf(message, "%s", buffer);
+	sprintf(CQUEUE, "%s", buffer);
 
-	size_of_message = strlen(message);
+	size_of_message = strlen(CQUEUE);
 
-	ePoint = size_of_message;
+	ePoint = ePoint + (size_of_message + 1);
 
 	printk(KERN_INFO "EBBChar: Received %zu characters from the user\n", len);
 
