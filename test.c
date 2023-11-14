@@ -41,33 +41,51 @@ int main(int argc, char *argv[]) {
     }
   
     do {
-        printf("Type in a short string to send to the kernel module:\n");
-        scanf("%[^\n]%*c", stringToSend); // Read in a string (with spaces)
-        printf("Writing message to the device [%s].\n", stringToSend);
+        char input;
+        
+        printf("Options: \n r : read \n w : write \n e : exit\n");
+        input = getchar();
+        printf("\n");
+
+        switch(input){
+            case 'r':
+                printf("Reading from the device...\n");
+                ret = read(fd, receive, BUFFER_LENGTH); // Read the response from the LKM
     
-        ret = write(fd, stringToSend, strlen(stringToSend)); // Send the string to the LKM
+                if (ret < 0) {
+                    perror("Failed to read the message from the device.");
+                    return errno;
+                }
+
+                printf("The received message is: [%s]\n", receive);
+                break;
+
+            case 'w':
+                getchar();
+
+                printf("Type in a short string to send to the kernel module:\n");
+                scanf("%[^\n]%*c", stringToSend); // Read in a string (with spaces)
+                printf("Writing message to the device [%s].\n", stringToSend);
     
-        if (ret < 0) {
-          perror("Failed to write the message to the device.");
-         return errno;
+                ret = write(fd, stringToSend, strlen(stringToSend)); // Send the string to the LKM
+    
+                if (ret < 0) {
+                    perror("Failed to write the message to the device.");
+                    return errno;
+                }
+                break;
+
+            case 'e':
+                printf("Goodbye\n");
+
+                return 1;
+            default:
+                printf("Invalid input, please try again\n");
+                break;
+
         }
 
-        printf("Press ENTER to read back from the device...\n");
-        getchar();
-
-        printf("Reading from the device...\n");
-        ret = read(fd, receive, 3); // Read the response from the LKM
-
-        
-
-        if (ret == 0) {
-          perror("Nothing is in the Buffer.");
-            return -1;
-        }
-        
-        printf("The received message is: [%s]\n", receive);
-        printf("End of the program\n");
-
+        printf("\n");
     } while(true);
 
     return 0;
