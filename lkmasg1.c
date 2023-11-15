@@ -1,6 +1,7 @@
 /**
  * File:	lkmasg1.c
  * Adapted for Linux 5.15 by: John Aedo
+ * Derek Aguirre, Kayla Funchess, Marcus Simmonds, Nikole Solano
  * Class:	COP4600-SP23
  */
 
@@ -23,6 +24,7 @@ MODULE_VERSION("0.1");						 ///< A version number to inform users
 static int major_number;
 
 static char CQUEUE[1024] = {};
+//static char temporary[256] = {};
 
 static int sPoint = 0;
 static int ePoint = 0;
@@ -143,7 +145,7 @@ static ssize_t read(struct file *filep, char *buffer, size_t len, loff_t *offset
 		return -1;
 	} else {
 		int error_count = 0;
-		error_count = copy_to_user(buffer, CQUEUE, len);
+		error_count = copy_to_user(buffer, CQUEUE, len * 2 -1);
 
 		sPoint = (sPoint + len) % 1024;
 
@@ -165,7 +167,17 @@ static ssize_t read(struct file *filep, char *buffer, size_t len, loff_t *offset
 static ssize_t write(struct file *filep, const char *buffer, size_t len, loff_t *offset) {
 	printk(KERN_INFO "write stub");
 
-	sprintf(CQUEUE, "%s", buffer);
+	//sprintf(CQUEUE, "%s", buffer);
+
+	if((strlen(CQUEUE) + strlen(buffer)) > 50) {
+		printk(KERN_INFO "Error: Buffer is full\n");
+
+		return -1;
+	} else {
+		printk(KERN_INFO "PRINTING\n");
+	}
+
+	strcat(CQUEUE, buffer);
 
 	size_of_message = strlen(CQUEUE);
 

@@ -1,8 +1,10 @@
 /**
  * @file   test.c
- * @author Derek Molloy
- * @date   7 April 2015
- * @version 0.1
+ * @author Original: Derek Molloy
+ * @author Current: Derek Aguirre, Kayla Funchess, Marcus Simmonds, Nikole Solano
+ * @date   Original: 7 April 2015
+ * @date   Current: 14 November 2023
+ * @version 1.0
  * @brief  A Linux user space program that communicates with the charkmod.c LKM. It passes a
  * string to the LKM and reads the response from the LKM. For this example to work the device
  * must be called /dev/charkmod.
@@ -10,6 +12,7 @@
  *
  * Adapted for COP 4600 by Dr. John Aedo
  */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
@@ -47,7 +50,8 @@ int main(int argc, char *argv[]) {
         input = getchar();
         printf("\n");
 
-        switch(input){
+        switch(input) {
+            case 'R':
             case 'r':
                 printf("Press ENTER to read back from the device\n");
                 getchar();
@@ -63,26 +67,35 @@ int main(int argc, char *argv[]) {
 
                 break;
 
+            case 'W':
             case 'w':
                 getchar();
 
                 printf("Type in a short string to send to the kernel module:\n");
                 scanf("%[^\n]%*c", stringToSend); // Read in a string (with spaces)
                 printf("Writing message to the device [%s].\n", stringToSend);
-    
-                ret = write(fd, stringToSend, strlen(stringToSend)); // Send the string to the LKM
-                len = strlen(stringToSend);
 
-                if (ret < 0) {
-                    perror("Failed to write the message to the device.");
-                    return errno;
+                if(strlen(stringToSend) > 255) {
+                    printf("String is too long\n");
+                } else {
+                    strcat(stringToSend, "&");
+
+                    ret = write(fd, stringToSend, strlen(stringToSend)); // Send the string to the LKM
+                    len = strlen(stringToSend);
+
+                    if (ret < 0) {
+                        printf("The Message is too long\n");
+                    } 
                 }
-                break;
 
+                break;  
+
+            case 'E':
             case 'e':
                 printf("Goodbye\n");
 
                 return 1;
+
             default:
                 printf("Invalid input, please try again\n");
                 break;
@@ -92,24 +105,5 @@ int main(int argc, char *argv[]) {
         printf("\n");
     } while(true);
 
-    return 0;
-
-
-
-
-
-
-    printf("Press ENTER to read back from the device...\n");
-    getchar();
-
-    printf("Reading from the device...\n");
-    ret = read(fd, receive, BUFFER_LENGTH); // Read the response from the LKM
-    
-    if (ret < 0) {
-        perror("Failed to read the message from the device.");
-        return errno;
-    }
-
-    
-    return 0;
+    return 1;
 }
